@@ -18,6 +18,13 @@ defmodule ChecklisterWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :home
+
+    live "/checklists", ChecklistLive.Index, :index
+    live "/checklists/new", ChecklistLive.Index, :new
+    live "/checklists/:id/edit", ChecklistLive.Edit, :edit
+
+    live "/checklists/:id", ChecklistLive.Show, :show
+    live "/checklists/:id/show/edit", ChecklistLive.Show, :edit
   end
 
   # Other scopes may use custom stacks.

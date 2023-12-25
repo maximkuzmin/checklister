@@ -1,0 +1,33 @@
+<.header>
+  Checklist <%= @checklist.id %>
+  <:subtitle>This is a checklist record from your database.</:subtitle>
+  <:actions>
+    <.link patch={~p"/checklists/#{@checklist}/show/edit"} phx-click={JS.push_focus()}>
+      <.button>Edit checklist</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.list>
+  <:item title="Name"><%= @checklist.name %></:item>
+  <:item title="Entries"><%= @checklist.entries %></:item>
+  <:item title="Is template"><%= @checklist.is_template %></:item>
+</.list>
+
+<.back navigate={~p"/checklists"}>Back to checklists</.back>
+
+<.modal
+  :if={@live_action == :edit}
+  id="checklist-modal"
+  show
+  on_cancel={JS.patch(~p"/checklists/#{@checklist}")}
+>
+  <.live_component
+    module={ChecklisterWeb.ChecklistLive.FormComponent}
+    id={@checklist.id}
+    title={@page_title}
+    action={@live_action}
+    checklist={@checklist}
+    patch={~p"/checklists/#{@checklist}"}
+  />
+</.modal>
