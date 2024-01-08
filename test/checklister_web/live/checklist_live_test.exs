@@ -4,7 +4,6 @@ defmodule ChecklisterWeb.ChecklistLiveTest do
   import Phoenix.LiveViewTest
   import Checklister.ChecklistsFixtures
 
-
   defp create_checklist(_) do
     checklist = checklist_fixture()
     %{checklist: checklist}
@@ -19,7 +18,6 @@ defmodule ChecklisterWeb.ChecklistLiveTest do
       assert html =~ "Listing Checklists"
       assert html =~ checklist.name
     end
-
 
     test "deletes checklist in listing", %{conn: conn, checklist: checklist} do
       {:ok, index_live, _html} = live(conn, ~p"/checklists")
@@ -38,11 +36,19 @@ defmodule ChecklisterWeb.ChecklistLiveTest do
       assert html =~ "Show Checklist"
       assert html =~ checklist.name
     end
-
-
   end
 
+  describe "Edit" do
+    setup [:create_checklist]
+
+    test "Displays form for checkllist", %{conn: conn, checklist: checklist} do
+      {:ok, _edit_live, html} = live(conn, ~p"/checklists/#{checklist.id}/edit")
+      assert html =~ "edit"
+      assert html =~ checklist.name
+    end
+  end
 end
+
 # TODO: To read and understand further or to be
 # removed without mercy before branch merge
 #
@@ -51,70 +57,70 @@ end
 # @invalid_attrs %{name: nil, entries: [], is_template: false}
 #
 # test "updates checklist within modal", %{conn: conn, checklist: checklist} do
-    #   {:ok, show_live, _html} = live(conn, ~p"/checklists/#{checklist}")
+#   {:ok, show_live, _html} = live(conn, ~p"/checklists/#{checklist}")
 
-    #   assert show_live |> element("a", "Edit") |> render_click() =~
-    #            "Edit Checklist"
+#   assert show_live |> element("a", "Edit") |> render_click() =~
+#            "Edit Checklist"
 
-    #   assert_patch(show_live, ~p"/checklists/#{checklist}/show/edit")
+#   assert_patch(show_live, ~p"/checklists/#{checklist}/show/edit")
 
-    #   assert show_live
-    #          |> form("#checklist-form", checklist: @invalid_attrs)
-    #          |> render_change() =~ "can&#39;t be blank"
+#   assert show_live
+#          |> form("#checklist-form", checklist: @invalid_attrs)
+#          |> render_change() =~ "can&#39;t be blank"
 
-    #   assert show_live
-    #          |> form("#checklist-form", checklist: @update_attrs)
-    #          |> render_submit()
+#   assert show_live
+#          |> form("#checklist-form", checklist: @update_attrs)
+#          |> render_submit()
 
-    #   assert_patch(show_live, ~p"/checklists/#{checklist}")
+#   assert_patch(show_live, ~p"/checklists/#{checklist}")
 
-    #   html = render(show_live)
-    #   assert html =~ "Checklist updated successfully"
-    #   assert html =~ "some updated name"
-    # end
+#   html = render(show_live)
+#   assert html =~ "Checklist updated successfully"
+#   assert html =~ "some updated name"
+# end
 
-     # test "saves new checklist", %{conn: conn} do
-    #   {:ok, index_live, _html} = live(conn, ~p"/checklists")
+# test "saves new checklist", %{conn: conn} do
+#   {:ok, index_live, _html} = live(conn, ~p"/checklists")
 
-    #   assert index_live |> element("a", "New Checklist") |> render_click() =~
-    #            "New Checklist"
+#   assert index_live |> element("a", "New Checklist") |> render_click() =~
+#            "New Checklist"
 
-    #   assert_patch(index_live, ~p"/checklists/new")
+#   assert_patch(index_live, ~p"/checklists/new")
 
-    #   assert index_live
-    #          |> form("#checklist-form", checklist: @invalid_attrs)
-    #          |> render_change() =~ "can&#39;t be blank"
+#   assert index_live
+#          |> form("#checklist-form", checklist: @invalid_attrs)
+#          |> render_change() =~ "can&#39;t be blank"
 
-    #   assert index_live
-    #          |> form("#checklist-form", checklist: @create_attrs)
-    #          |> render_submit()
+#   assert index_live
+#          |> form("#checklist-form", checklist: @create_attrs)
+#          |> render_submit()
 
-    #   assert_patch(index_live, ~p"/checklists")
+#   assert_patch(index_live, ~p"/checklists")
 
-    #   html = render(index_live)
-    #   assert html =~ "Checklist created successfully"
-    #   assert html =~ "some name"
-    # end
+#   html = render(index_live)
+#   assert html =~ "Checklist created successfully"
+#   assert html =~ "some name"
+# end
 
-    # test "updates checklist in listing", %{conn: conn, checklist: checklist} do
-    #   {:ok, index_live, _html} = live(conn, ~p"/checklists")
+# test "updates checklist in listing", %{conn: conn, checklist: checklist} do
+#   {:ok, index_live, _html} = live(conn, ~p"/checklists")
 
-    #   assert index_live |> element("#checklists-#{checklist.id} a", "Edit") |> render_click() =~
-    #            "Edit Checklist"
+#   assert index_live |> element("#checklists-#{checklist.id} a", "Edit") |> render_click() =~
+#            "Edit Checklist"
 
-    #   assert_patch(index_live, ~p"/checklists/#{checklist}/edit")
+#   assert_patch(index_live, ~p"/checklists/#{checklist}/edit")
 
-    #   assert index_live
-    #          |> form("#checklist-form", checklist: @invalid_attrs)
-    #          |> render_change() =~ "can&#39;t be blank"
+#   assert index_live
+#          |> form("#checklist-form", checklist: @invalid_attrs)
+#          |> render_change() =~ "can&#39;t be blank"
 
-    #   assert index_live
-    #          |> form("#checklist-form", checklist: @update_attrs)
-    #          |> render_submit()
+#   assert index_live
+#          |> form("#checklist-form", checklist: @update_attrs)
+#          |> render_submit()
 
-    #   assert_patch(index_live, ~p"/checklists")
+#   assert_patch(index_live, ~p"/checklists")
 
-    #   html = render(index_live)
-    #   assert html =~ "Checklist updated successfully"
-    #   assert html =~ "some updated name"
-    # end
+#   html = render(index_live)
+#   assert html =~ "Checklist updated successfully"
+#   assert html =~ "some updated name"
+# end
