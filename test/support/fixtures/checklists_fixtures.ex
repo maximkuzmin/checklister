@@ -9,23 +9,29 @@ defmodule Checklister.ChecklistsFixtures do
   """
   def checklist_fixture(attrs \\ %{}) do
     {:ok, checklist} =
-      attrs
-      |> Enum.into(%{
-        entries: [
-          %{
-            "name" => "Test entry",
-            "is_done" => false,
-            "entries" => [%{
-              "name" => "Inner entry",
-              "is_done" => true,
-            }]
-          }
-        ],
-        is_template: true,
-        name: "some name"
-      })
+      checklist_fixture_params(attrs)
       |> Checklister.Checklists.create_checklist()
 
     checklist
+  end
+
+  def checklist_fixture_params(attrs \\ %{}) do
+    attrs
+    |> Enum.into(%{
+      entries: [
+        %{
+          "name" => "First level entry",
+          "is_done" => false,
+          "entries" => [
+            %{
+              "name" => "Second level entry",
+              "is_done" => true
+            }
+          ]
+        }
+      ],
+      is_template: true,
+      name: "some name"
+    })
   end
 end
