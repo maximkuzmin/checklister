@@ -11,7 +11,16 @@ defmodule Checklister.ChecklistsFixtures do
     {:ok, checklist} =
       attrs
       |> Enum.into(%{
-        entries: [],
+        entries: [
+          %{
+            "name" => "Test entry",
+            "is_done" => false,
+            "entries" => [%{
+              "name" => "Inner entry",
+              "is_done" => true,
+            }]
+          }
+        ],
         is_template: true,
         name: "some name"
       })

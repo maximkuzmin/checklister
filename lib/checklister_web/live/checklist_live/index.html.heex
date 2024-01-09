@@ -13,7 +13,7 @@
   row_click={fn {_id, checklist} -> JS.navigate(~p"/checklists/#{checklist}") end}
 >
   <:col :let={{_id, checklist}} label="Name"><%= checklist.name %></:col>
-  <:col :let={{_id, checklist}} label="Entries"><%= checklist.entries %></:col>
+  <:col :let={{_id, checklist}} label="Entries"><%= checklist.entries |> Enum.count() %></:col>
   <:col :let={{_id, checklist}} label="Is template"><%= checklist.is_template %></:col>
   <:action :let={{_id, checklist}}>
     <div class="sr-only">

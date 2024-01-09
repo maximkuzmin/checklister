@@ -10,8 +10,16 @@
 
 <.list>
   <:item title="Name"><%= @checklist.name %></:item>
-  <:item title="Entries"><%= @checklist.entries %></:item>
-  <:item title="Is template"><%= @checklist.is_template %></:item>
+
+  <:item title="Entries">
+    <%= @checklist.entries |> Enum.map(fn entry -> %>
+      <p><%= entry.name %></p>
+    <% end )%>
+  </:item>
+
+  <:item title="Is template">
+    <%= @checklist.is_template %>
+  </:item>
 </.list>
 
 <.back navigate={~p"/checklists"}>Back to checklists</.back>

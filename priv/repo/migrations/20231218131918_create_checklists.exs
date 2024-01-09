@@ -4,7 +4,7 @@ defmodule Checklister.Repo.Migrations.CreateChecklists do
   def change do
     create table(:checklists) do
       add :name, :string
-      add :entries, {:array, :map}
+      add :entries, :map
       add :is_template, :boolean, default: false, null: false
 
       timestamps(type: :utc_datetime)
