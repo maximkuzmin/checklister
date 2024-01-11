@@ -15,6 +15,7 @@ defmodule Checklister.ChecklistsFixtures do
     checklist
   end
 
+  @spec checklist_fixture_params(any()) :: any()
   def checklist_fixture_params(attrs \\ %{}) do
     attrs
     |> Enum.into(%{
@@ -25,6 +26,20 @@ defmodule Checklister.ChecklistsFixtures do
           "entries" => [
             %{
               "name" => "Second level entry",
+              "is_done" => true
+            }
+          ]
+        },
+        %{
+          "name" => "First level entry #2",
+          "is_done" => false,
+          "entries" => [
+            %{
+              "name" => "Second level entry #2",
+              "is_done" => true
+            } ,
+            %{
+              "name" => "Second level entry #3",
               "is_done" => true
             }
           ]

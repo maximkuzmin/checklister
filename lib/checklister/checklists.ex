@@ -6,7 +6,7 @@ defmodule Checklister.Checklists do
   import Ecto.Query, warn: false
   alias Checklister.Repo
 
-  alias Checklister.Checklists.Checklist
+  alias Checklister.Checklists.{Checklist, Entry}
 
   @doc """
   Returns the list of checklists.
@@ -72,6 +72,86 @@ defmodule Checklister.Checklists do
     |> Checklist.changeset(attrs)
     |> Repo.update()
   end
+
+  require IEx
+
+  def add_entry(%Checklist{} = checklist, path \\ [], entry_params) do
+    update_params =
+      checklist
+      |> find_and_add_entry(path, entry_params)
+      |> recursively_make_params_from_structs()
+      |> Map.delete(:__meta__)
+
+    changeset =
+      checklist
+      |> Ecto.Changeset.change(update_params)
+
+    Repo.update!(changeset)
+  end
+
+  @spec find_and_add_entry(%Checklist{} | %Entry{}, list(String.t()), map) ::
+          %Checklist{} | %Entry{}
+  defp find_and_add_entry(incoming_entity, path, entry_params) do
+    fun = fn %{entries: entries} = found_entity ->
+      updated_entries = entries ++ [entry_params]
+      %{found_entity | entries: updated_entries}
+    end
+
+    find_entity_and_perform(incoming_entity, path, fun)
+  end
+
+  @spec find_entity_and_perform(%Checklist{} | %Entry{}, list(String.t()), fun) ::
+          %Checklist{} | %Entry{}
+  defp find_entity_and_perform(
+         %{entries: entries} = incoming_entity,
+         [next_entry_id | rest_of_path],
+         fun
+       ) do
+    updated_entries =
+      entries
+      |> Enum.map(fn
+        %Entry{id: ^next_entry_id} = entry ->
+          find_entity_and_perform(entry, rest_of_path, fun)
+
+        entry ->
+          entry
+      end)
+
+    %{incoming_entity | entries: updated_entries}
+  end
+
+  defp find_entity_and_perform(incoming_entity, [], fun) do
+    fun.(incoming_entity)
+  end
+
+  @spec recursively_make_params_from_structs(any()) :: any()
+  defp recursively_make_params_from_structs(%DateTime{} = dt), do: dt
+
+  defp recursively_make_params_from_structs(str) when is_struct(str) do
+    str
+    |> Map.from_struct()
+    |> recursively_make_params_from_structs()
+  end
+
+  defp recursively_make_params_from_structs(map) when is_map(map) do
+    map
+    |> Enum.map(fn {k, v} ->
+      {k, recursively_make_params_from_structs(v)}
+    end)
+    |> Enum.into(%{})
+  end
+
+  defp recursively_make_params_from_structs(list) when is_list(list) do
+    list
+    |> Enum.map(&recursively_make_params_from_structs/1)
+  end
+
+  defp recursively_make_params_from_structs({kw_key, kw_val}) when is_atom(kw_key) do
+    {kw_key, kw_val}
+    {kw_key, recursively_make_params_from_structs(kw_val)}
+  end
+
+  defp recursively_make_params_from_structs(val), do: val
 
   @doc """
   Deletes a checklist.

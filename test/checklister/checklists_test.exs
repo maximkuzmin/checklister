@@ -1,5 +1,8 @@
 defmodule Checklister.ChecklistsTest do
   use Checklister.DataCase
+  require IEx
+
+  @tag timeout: :infinity
 
   alias Checklister.Checklists
 
@@ -100,6 +103,32 @@ defmodule Checklister.ChecklistsTest do
     test "change_checklist/1 returns a checklist changeset" do
       checklist = checklist_fixture()
       assert %Ecto.Changeset{} = Checklists.change_checklist(checklist)
+    end
+
+    test "add_entry/3 adds an entry to a checklist" do
+      entry_params = %{name: "Third entry"}
+      checklist = checklist_fixture()
+
+      result = Checklists.add_entry(checklist, entry_params)
+
+      third_saved_entry = result.entries |> Enum.at(2)
+      assert %Entry{id: id, name: "Third entry"} = third_saved_entry
+      assert {:ok, _} = Ecto.UUID.dump(id)
+    end
+
+    test "add_entry/3 adds entry to nested entry using path of ids" do
+      expected_name = "Second level entry # 2"
+      checklist = checklist_fixture()
+      entry_params = %{name: "Second level entry # 2"}
+
+      [%Entry{id: parent_entry_id} | _] = checklist.entries
+      path = [parent_entry_id]
+
+      result = Checklists.add_entry(checklist, path, entry_params)
+
+      assert %Checklist{} = result
+      assert %Entry{id: ^parent_entry_id, entries: [_, %Entry{id: id, name: ^expected_name}]} = result.entries |> List.first()
+      assert {:ok, _} = Ecto.UUID.dump(id)
     end
   end
 end
