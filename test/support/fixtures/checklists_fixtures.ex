@@ -43,6 +43,10 @@ defmodule Checklister.ChecklistsFixtures do
               "is_done" => true
             }
           ]
+        },
+        %{
+          "name" => "First level entry #3",
+          "is_done" => false,
         }
       ],
       is_template: true,

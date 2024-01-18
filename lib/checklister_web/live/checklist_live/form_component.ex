@@ -3,10 +3,13 @@ defmodule ChecklisterWeb.ChecklistLive.FormComponent do
 
   alias Checklister.Checklists
 
+  alias Checklister.Checklists.Entry
+
   @impl Phoenix.LiveComponent
   def render(assigns) do
     ~H"""
     <div>
+      <h1><%= @id %></h1>
       <.header>
         <%= @title %>
         <:subtitle>
@@ -29,6 +32,8 @@ defmodule ChecklisterWeb.ChecklistLive.FormComponent do
         <:actions>
           <.button phx-disable-with="Saving...">Save Checklist</.button>
         </:actions>
+
+       <.button phx-click='add_entry'>Add entry</.button>
       </.simple_form>
     </div>
     """
@@ -37,15 +42,17 @@ defmodule ChecklisterWeb.ChecklistLive.FormComponent do
   @impl Phoenix.LiveComponent
   def update(%{checklist: checklist} = assigns, socket) do
     changeset = Checklists.change_checklist(checklist)
+    new_entry = Ecto.Changeset.change(%Entry{})
 
     {:ok,
      socket
      |> assign(assigns)
+     |> assign(:new_entry_form, to_form(new_entry))
      |> assign_form(changeset)}
   end
 
   @impl Phoenix.LiveComponent
-  def handle_event("validate", %{"checklist" => checklist_params}, socket) do
+  def handle_event("validate", %{"checklist" => checklist_params} = _params, socket) do
     changeset =
       socket.assigns.checklist
       |> Checklists.change_checklist(checklist_params)
@@ -56,6 +63,11 @@ defmodule ChecklisterWeb.ChecklistLive.FormComponent do
 
   def handle_event("save", %{"checklist" => checklist_params}, socket) do
     save_checklist(socket, socket.assigns.action, checklist_params)
+  end
+
+  def handle_event("add_entry", unsigned_params, socket) do
+    dbg(unsigned_params)
+    {:noreply, socket}
   end
 
   defp save_checklist(socket, :edit, checklist_params) do
@@ -76,7 +88,9 @@ defmodule ChecklisterWeb.ChecklistLive.FormComponent do
   end
 
   defp save_checklist(socket, :new, checklist_params) do
-    case Checklists.create_checklist(checklist_params) do
+    checklist_params
+    |> Checklists.create_checklist()
+    |> case do
       {:ok, checklist} ->
         notify_parent({:saved, checklist})
 

@@ -1,9 +1,5 @@
 defmodule Checklister.ChecklistsTest do
   use Checklister.DataCase
-  require IEx
-
-  @tag timeout: :infinity
-
   alias Checklister.Checklists
 
   describe "checklists" do
@@ -106,17 +102,17 @@ defmodule Checklister.ChecklistsTest do
     end
 
     test "add_entry/3 adds an entry to a checklist" do
-      entry_params = %{name: "Third entry"}
+      entry_params = %{name: "added entry"}
       checklist = checklist_fixture()
 
-      result = Checklists.add_entry(checklist, entry_params)
+      result = Checklists.add_entry!(checklist, entry_params)
 
-      third_saved_entry = result.entries |> Enum.at(2)
-      assert %Entry{id: id, name: "Third entry"} = third_saved_entry
+      last_saved_entry = result.entries |> Enum.at(-1)
+      assert %Entry{id: id, name: "added entry"} = last_saved_entry
       assert {:ok, _} = Ecto.UUID.dump(id)
     end
 
-    test "add_entry/3 adds entry to nested entry using path of ids" do
+    test "add_entry!/3 adds entry to nested entry using path of ids" do
       expected_name = "Second level entry # 2"
       checklist = checklist_fixture()
       entry_params = %{name: "Second level entry # 2"}
@@ -124,11 +120,83 @@ defmodule Checklister.ChecklistsTest do
       [%Entry{id: parent_entry_id} | _] = checklist.entries
       path = [parent_entry_id]
 
-      result = Checklists.add_entry(checklist, path, entry_params)
+      result = Checklists.add_entry!(checklist, path, entry_params)
 
       assert %Checklist{} = result
-      assert %Entry{id: ^parent_entry_id, entries: [_, %Entry{id: id, name: ^expected_name}]} = result.entries |> List.first()
+
+      assert %Entry{id: ^parent_entry_id, entries: [_, %Entry{id: id, name: ^expected_name}]} =
+               result.entries |> List.first()
+
       assert {:ok, _} = Ecto.UUID.dump(id)
+    end
+
+    test "delete_entry!/3 removes entry from first level of checklist on nested collections" do
+      %{
+        entries: [_ | [parent_of_to_be_deleted | _]]
+      } = checklist = checklist_fixture()
+
+      %{entries: [entry_to_be_left, entry_to_be_deleted]} = parent_of_to_be_deleted
+
+      path = [parent_of_to_be_deleted.id, entry_to_be_deleted.id]
+
+      result = Checklists.delete_entry!(checklist, path)
+
+      assert %Checklist{
+               entries: [
+                 _,
+                 %Entry{id: parent_id, entries: [%Entry{} = entry_left]},
+                 _
+               ]
+             } = result
+
+      assert parent_of_to_be_deleted.id == parent_id
+      assert entry_left == entry_to_be_left
+    end
+
+    test "delete_entry!/3 removes entry from first level of checklist" do
+      %{entries: subentries} = checklist = checklist_fixture()
+      [entry_to_be_left | [entry_to_be_deleted | rest]] = subentries
+
+      path = [entry_to_be_deleted.id]
+
+      result = Checklists.delete_entry!(checklist, path)
+
+      assert %Checklist{
+               entries: [entry_left | whats_rest]
+             } = result
+
+      assert entry_left == entry_to_be_left
+      assert rest == whats_rest
+    end
+
+    test "update_entry!/3 updates existing entry on first level of checklist" do
+      %{entries: entries} = checklist = checklist_fixture()
+      entry = entries |> Enum.at(1)
+      expected_name = "Changed entry name"
+      id = entry.id
+      path = [id]
+      update_entry_params = %{"name" =>  expected_name}
+
+      assert %Checklist{entries: entries} = Checklists.update_entry!(checklist, path, update_entry_params)
+      updated_subentry = entries |> Enum.at(1)
+      assert %Entry{id: ^id, name: ^expected_name} = updated_subentry
+    end
+
+
+    test "update_entry!/3 updates existing entry on deeper levels of checklist" do
+      %{entries: entries} = checklist = checklist_fixture()
+      first_level_entry = entries |> Enum.at(1)
+      expected_name = "Changed entry name"
+      second_level_entry = first_level_entry.entries |> Enum.at(1)
+      id = second_level_entry.id
+      path = [first_level_entry.id, id]
+
+      update_entry_params = %{"name" =>  expected_name}
+
+      assert %Checklist{entries: entries} = Checklists.update_entry!(checklist, path, update_entry_params)
+      updated_first_level_subentry = entries |> Enum.at(1)
+      updated_second_level_subentry = updated_first_level_subentry.entries |> Enum.at(1)
+      assert %Entry{id: ^id, name: ^expected_name} = updated_second_level_subentry
     end
   end
 end

@@ -73,12 +73,34 @@ defmodule Checklister.Checklists do
     |> Repo.update()
   end
 
-  require IEx
+  def add_entry!(%Checklist{} = checklist, path \\ [], entry_params) do
+    fun = fn %{entries: entries} = found_entity ->
+      updated_entries = entries ++ [entry_params]
+      %{found_entity | entries: updated_entries}
+    end
 
-  def add_entry(%Checklist{} = checklist, path \\ [], entry_params) do
+    update_checklist_entries_with_recursive_fun(checklist, path, fun)
+  end
+
+  def delete_entry!(%Checklist{} = checklist, path) do
+    fun = fn _ -> nil end
+
+    update_checklist_entries_with_recursive_fun(checklist, path, fun)
+  end
+
+  def update_entry!(%Checklist{} = checklist, path, entry_update_params) do
+    fun = fn found_entry ->
+      Entry.changeset(found_entry, entry_update_params)
+      |> Ecto.Changeset.apply_changes()
+    end
+
+    update_checklist_entries_with_recursive_fun(checklist, path, fun)
+  end
+
+  defp update_checklist_entries_with_recursive_fun(checklist, path, fun) do
     update_params =
       checklist
-      |> find_and_add_entry(path, entry_params)
+      |> find_entity_and_perform(path, fun)
       |> recursively_make_params_from_structs()
       |> Map.delete(:__meta__)
 
@@ -87,17 +109,6 @@ defmodule Checklister.Checklists do
       |> Ecto.Changeset.change(update_params)
 
     Repo.update!(changeset)
-  end
-
-  @spec find_and_add_entry(%Checklist{} | %Entry{}, list(String.t()), map) ::
-          %Checklist{} | %Entry{}
-  defp find_and_add_entry(incoming_entity, path, entry_params) do
-    fun = fn %{entries: entries} = found_entity ->
-      updated_entries = entries ++ [entry_params]
-      %{found_entity | entries: updated_entries}
-    end
-
-    find_entity_and_perform(incoming_entity, path, fun)
   end
 
   @spec find_entity_and_perform(%Checklist{} | %Entry{}, list(String.t()), fun) ::
@@ -116,6 +127,7 @@ defmodule Checklister.Checklists do
         entry ->
           entry
       end)
+      |> Enum.reject(&Kernel.is_nil/1)
 
     %{incoming_entity | entries: updated_entries}
   end
