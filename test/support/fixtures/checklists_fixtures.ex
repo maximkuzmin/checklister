@@ -37,7 +37,7 @@ defmodule Checklister.ChecklistsFixtures do
             %{
               "name" => "Second level entry #2",
               "is_done" => true
-            } ,
+            },
             %{
               "name" => "Second level entry #3",
               "is_done" => true
@@ -46,7 +46,7 @@ defmodule Checklister.ChecklistsFixtures do
         },
         %{
           "name" => "First level entry #3",
-          "is_done" => false,
+          "is_done" => false
         }
       ],
       is_template: true,

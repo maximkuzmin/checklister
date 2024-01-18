@@ -5,16 +5,16 @@ defmodule ChecklisterWeb.ChecklistLive.EntriesListComponent do
   def render(assigns) do
     ~H"""
     <div class="test-component">
-        <ul>
-          <li :for={entry <- @parent.entries}>
-            <.live_component
-              id={"entry-edit-#{entry.id}"}
-              module={ChecklisterWeb.ChecklistLive.EntryEdit}
-              entry={entry}
-              path={build_path(entry, @path)}
-            />
-          </li>
-        </ul>
+      <ul>
+        <li :for={entry <- @parent.entries}>
+          <.live_component
+            id={"entry-edit-#{entry.id}"}
+            module={ChecklisterWeb.ChecklistLive.EntryEdit}
+            entry={entry}
+            path={build_path(entry, @path)}
+          />
+        </li>
+      </ul>
     </div>
     """
   end

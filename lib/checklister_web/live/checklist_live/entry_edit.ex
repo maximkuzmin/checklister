@@ -36,6 +36,7 @@ defmodule ChecklisterWeb.ChecklistLive.EntryEdit do
   @impl true
   def handle_event("validate", %{"entry" => entry_params}, socket) do
     IO.puts("validate")
+
     changeset =
       socket.assigns.entry
       |> Entry.changeset(entry_params)

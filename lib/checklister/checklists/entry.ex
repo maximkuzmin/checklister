@@ -1,7 +1,11 @@
 defmodule Checklister.Checklists.Entry do
   use Ecto.Schema
 
+  @moduledoc """
+  Describes an Ecto Schema for storing checklist entries embeds with sub-entries nested
+  """
 
+  @type t :: %__MODULE__{}
 
   @primary_key {:id, Ecto.UUID, autogenerate: true}
 
@@ -13,7 +17,6 @@ defmodule Checklister.Checklists.Entry do
 
     timestamps(type: :utc_datetime)
   end
-
 
   def changeset(entry \\ %__MODULE__{}, params) do
     entry

@@ -41,14 +41,14 @@ defmodule ChecklisterWeb.ChecklistLive.Edit do
     {:noreply, updated_socket}
   end
 
-
   # from
   def handle_info({:update_entry, %{path: path, changes: changes}} = params, socket) do
     checklist = Checklists.update_entry!(socket.assigns.checklist, path, changes)
+
     socket =
       socket
       |> assign(:checklist, checklist)
+
     {:noreply, socket}
   end
-
 end

@@ -111,8 +111,8 @@ defmodule Checklister.Checklists do
     Repo.update!(changeset)
   end
 
-  @spec find_entity_and_perform(%Checklist{} | %Entry{}, list(String.t()), fun) ::
-          %Checklist{} | %Entry{}
+  @spec find_entity_and_perform(Checklist.t() | Entry.t(), list(String.t()), fun) ::
+          Checklist.t() | Entry.t()
   defp find_entity_and_perform(
          %{entries: entries} = incoming_entity,
          [next_entry_id | rest_of_path],

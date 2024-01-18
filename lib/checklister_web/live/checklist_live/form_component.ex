@@ -33,7 +33,7 @@ defmodule ChecklisterWeb.ChecklistLive.FormComponent do
           <.button phx-disable-with="Saving...">Save Checklist</.button>
         </:actions>
 
-       <.button phx-click='add_entry'>Add entry</.button>
+        <.button phx-click="add_entry">Add entry</.button>
       </.simple_form>
     </div>
     """
@@ -66,7 +66,6 @@ defmodule ChecklisterWeb.ChecklistLive.FormComponent do
   end
 
   def handle_event("add_entry", unsigned_params, socket) do
-    dbg(unsigned_params)
     {:noreply, socket}
   end
 

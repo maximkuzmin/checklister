@@ -1,7 +1,12 @@
 defmodule Checklister.Checklists.Checklist do
+  @moduledoc """
+  Describes an Ecto Schema for storing checklists
+  """
   use Ecto.Schema
 
   alias Checklister.Checklists.Entry
+
+  @type t :: %__MODULE__{}
 
   import Ecto.Changeset
 

@@ -175,13 +175,14 @@ defmodule Checklister.ChecklistsTest do
       expected_name = "Changed entry name"
       id = entry.id
       path = [id]
-      update_entry_params = %{"name" =>  expected_name}
+      update_entry_params = %{"name" => expected_name}
 
-      assert %Checklist{entries: entries} = Checklists.update_entry!(checklist, path, update_entry_params)
+      assert %Checklist{entries: entries} =
+               Checklists.update_entry!(checklist, path, update_entry_params)
+
       updated_subentry = entries |> Enum.at(1)
       assert %Entry{id: ^id, name: ^expected_name} = updated_subentry
     end
-
 
     test "update_entry!/3 updates existing entry on deeper levels of checklist" do
       %{entries: entries} = checklist = checklist_fixture()
@@ -191,9 +192,11 @@ defmodule Checklister.ChecklistsTest do
       id = second_level_entry.id
       path = [first_level_entry.id, id]
 
-      update_entry_params = %{"name" =>  expected_name}
+      update_entry_params = %{"name" => expected_name}
 
-      assert %Checklist{entries: entries} = Checklists.update_entry!(checklist, path, update_entry_params)
+      assert %Checklist{entries: entries} =
+               Checklists.update_entry!(checklist, path, update_entry_params)
+
       updated_first_level_subentry = entries |> Enum.at(1)
       updated_second_level_subentry = updated_first_level_subentry.entries |> Enum.at(1)
       assert %Entry{id: ^id, name: ^expected_name} = updated_second_level_subentry
