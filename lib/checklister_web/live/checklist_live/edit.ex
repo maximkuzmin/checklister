@@ -18,7 +18,6 @@ defmodule ChecklisterWeb.ChecklistLive.Edit do
       <.live_component
         module={ChecklisterWeb.ChecklistLive.EntriesListComponent}
         id={"checklist-test-component-#{Ecto.UUID.generate()}"}
-        checklist={@checklist}
         parent={@checklist}
         path={[]}
       />
@@ -41,9 +40,25 @@ defmodule ChecklisterWeb.ChecklistLive.Edit do
     {:noreply, updated_socket}
   end
 
-  # from
-  def handle_info({:update_entry, %{path: path, changes: changes}} = params, socket) do
-    checklist = Checklists.update_entry!(socket.assigns.checklist, path, changes)
+  @impl true
+  def handle_info(
+        {:update_entry, %{path: path, changes: changes}},
+        %{assigns: %{checklist: checklist}} = socket
+      ) do
+    checklist = Checklists.update_entry!(checklist, path, changes)
+
+    socket =
+      socket
+      |> assign(:checklist, checklist)
+
+    {:noreply, socket}
+  end
+
+  def handle_info(
+        {:add_entry, %{path: path, changes: changes}},
+        %{assigns: %{checklist: checklist}} = socket
+      ) do
+    checklist = Checklists.add_entry!(checklist, path, changes)
 
     socket =
       socket

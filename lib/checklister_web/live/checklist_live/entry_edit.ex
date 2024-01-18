@@ -8,12 +8,13 @@ defmodule ChecklisterWeb.ChecklistLive.EntryEdit do
     ~H"""
     <div class="entry-edit">
       <.simple_form for={@form} phx-change="validate" phx-target={@myself}>
-        <%= @changeset |> inspect(pretty: true) %>
         <.input
           id={"entry-#{@entry.id}-name"}
           type="text"
           field={@form[:name]}
           phx-hook="SaveOnEnter"
+          phx-target={@myself}
+          phx-blur="update_entry"
         />
       </.simple_form>
     </div>
@@ -35,8 +36,6 @@ defmodule ChecklisterWeb.ChecklistLive.EntryEdit do
 
   @impl true
   def handle_event("validate", %{"entry" => entry_params}, socket) do
-    IO.puts("validate")
-
     changeset =
       socket.assigns.entry
       |> Entry.changeset(entry_params)

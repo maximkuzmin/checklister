@@ -25,22 +25,26 @@ let Hooks = {};
 // }
 
 
-function getFormData(inputElement){
-    let formData = new FormData(inputElement.form)
-
-    console.log(Object.fromEntries(formData))
-}
-
 
 Hooks.SaveOnEnter = {
     mounted() {
         this.el.addEventListener("keydown", (event) => {
             if (event.key === "Enter") {
-                console.log("it happened!")
-                console.log({event})
                 event.preventDefault()
-                getFormData(this.el)
                 this.pushEventTo(this.el, "update_entry")
+            }
+        })
+    }
+}
+
+Hooks.AddEntry = {
+    mounted() {
+        this.el.addEventListener("keydown", (event) => {
+            if (event.key === "Enter") {
+                event.preventDefault()
+
+                this.pushEventTo(this.el, "add_entry")
+                this.el.value = ""
             }
         })
     }

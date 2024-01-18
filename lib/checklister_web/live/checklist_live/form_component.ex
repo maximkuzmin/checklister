@@ -65,10 +65,6 @@ defmodule ChecklisterWeb.ChecklistLive.FormComponent do
     save_checklist(socket, socket.assigns.action, checklist_params)
   end
 
-  def handle_event("add_entry", unsigned_params, socket) do
-    {:noreply, socket}
-  end
-
   defp save_checklist(socket, :edit, checklist_params) do
     socket.assigns.checklist
     |> Checklists.update_checklist(checklist_params)
