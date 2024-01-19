@@ -9,7 +9,6 @@ defmodule ChecklisterWeb.ChecklistLive.FormComponent do
   def render(assigns) do
     ~H"""
     <div>
-      <h1><%= @id %></h1>
       <.header>
         <%= @title %>
         <:subtitle>
