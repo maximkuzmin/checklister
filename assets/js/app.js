@@ -15,7 +15,7 @@
 //     import "some-package"
 //
 
-import Hooks from "./entry_form_behaviour.js"
+import Hooks from "./hooks/hooks.js"
 
 // Include phoenix_html to handle method=PUT/DELETE in forms and buttons.
 import "phoenix_html"
