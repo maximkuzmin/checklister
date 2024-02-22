@@ -111,18 +111,29 @@ defmodule Checklister.Checklists do
     Repo.update!(changeset)
   end
 
-  @spec find_entity_and_perform(Checklist.t() | Entry.t(), list(String.t()), fun) ::
+  @spec find_entity_and_perform(
+          Checklist.t() | Entry.t(),
+          list(String.t()),
+          timestamp :: DateTime.t(),
+          fun
+        ) ::
           Checklist.t() | Entry.t()
+
+  defp find_entity_and_perform(incoming_entity, path, timestamp \\ DateTime.utc_now(), fun)
+
   defp find_entity_and_perform(
          %{entries: entries} = incoming_entity,
          [next_entry_id | rest_of_path],
+         timestamp,
          fun
        ) do
     updated_entries =
       entries
       |> Enum.map(fn
         %Entry{id: ^next_entry_id} = entry ->
-          find_entity_and_perform(entry, rest_of_path, fun)
+          entry
+          |> Map.put(:updated_at, timestamp)
+          |> find_entity_and_perform(rest_of_path, timestamp, fun)
 
         entry ->
           entry
@@ -132,7 +143,7 @@ defmodule Checklister.Checklists do
     %{incoming_entity | entries: updated_entries}
   end
 
-  defp find_entity_and_perform(incoming_entity, [], fun) do
+  defp find_entity_and_perform(incoming_entity, [], _timestamp, fun) do
     fun.(incoming_entity)
   end
 

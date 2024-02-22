@@ -5,7 +5,9 @@ defmodule ChecklisterWeb.ChecklistLive.Edit do
 
   @impl Phoenix.LiveView
   def mount(_params, _session, socket) do
-    {:ok, socket}
+    updated_socket = socket |> add_new_timestamp()
+
+    {:ok, updated_socket}
   end
 
   @impl true
@@ -14,11 +16,13 @@ defmodule ChecklisterWeb.ChecklistLive.Edit do
     <div class="edit-form">
       <h1>
         <%= @checklist.name %>
+        <%= @checklist.updated_at %>
       </h1>
       <.live_component
         module={ChecklisterWeb.ChecklistLive.EntriesListComponent}
-        id={"checklist-test-component-#{Ecto.UUID.generate()}"}
+        id={"checklist-entries-list-component-#{@checklist.id}"}
         parent={@checklist}
+        timestamp={@timestamp}
         path={[]}
       />
     </div>
@@ -36,6 +40,7 @@ defmodule ChecklisterWeb.ChecklistLive.Edit do
       socket
       |> assign(:page_title, "edit")
       |> assign(:checklist, checklist)
+      |> add_new_timestamp()
 
     {:noreply, updated_socket}
   end
@@ -46,12 +51,14 @@ defmodule ChecklisterWeb.ChecklistLive.Edit do
         %{assigns: %{checklist: checklist}} = socket
       ) do
     checklist = Checklists.update_entry!(checklist, path, changes)
+    checklist = Checklists.get_checklist!(checklist.id)
 
-    socket =
+    updated_socket =
       socket
       |> assign(:checklist, checklist)
+      |> add_new_timestamp()
 
-    {:noreply, socket}
+    {:noreply, updated_socket}
   end
 
   def handle_info(
@@ -60,10 +67,16 @@ defmodule ChecklisterWeb.ChecklistLive.Edit do
       ) do
     checklist = Checklists.add_entry!(checklist, path, changes)
 
-    socket =
+    updated_socket =
       socket
       |> assign(:checklist, checklist)
+      |> add_new_timestamp()
 
-    {:noreply, socket}
+    {:noreply, updated_socket}
+  end
+
+  defp add_new_timestamp(socket) do
+    socket
+    |> assign(:timestamp, DateTime.utc_now())
   end
 end
