@@ -6,7 +6,7 @@ defmodule ChecklisterWeb.ProbesController do
 
   defp respond_ok(conn) do
     conn
-    |> Plug.Conn.send_resp(200, [])
+    |> Plug.Conn.send_resp(200, "ok")
     |> Plug.Conn.halt()
   end
 end
