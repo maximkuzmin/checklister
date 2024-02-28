@@ -19,7 +19,7 @@ defmodule ChecklisterWeb.Router do
 
     get "/", PageController, :home
     get "/liveness", ProbesController, :live
-    get "/readyness", ProbesController, :ready
+    get "/readiness", ProbesController, :ready
 
     live "/checklists", ChecklistLive.Index, :index
     live "/checklists/new", ChecklistLive.Index, :new
