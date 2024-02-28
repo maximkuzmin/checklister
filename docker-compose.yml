@@ -1,0 +1,24 @@
+version: '3.4'
+
+services:
+  checklister:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    environment:
+      DATABASE_HOSTNAME: "postgres"
+      DATABASE_USERNAME: "postgres"
+      DATABASE_PASSWORD: "postgres"
+      DATABASE_NAME: "checklister_prod"
+      POOL_SIZE: 10
+      SECRET_KEY_BASE: "&i3ZhQ7kSgJ25LL@UEgM$3QsCL9c7j2Aanp5*&n7e*4&5P*tHff5WaswL5t#XvyB"
+      PHX_HOST: "example.com"
+  postgres:
+    image: postgres:latest
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+
+

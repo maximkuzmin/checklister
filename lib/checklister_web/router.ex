@@ -18,6 +18,8 @@ defmodule ChecklisterWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :home
+    get "/liveness", ProbesController, :live
+    get "/readyness", ProbesController, :ready
 
     live "/checklists", ChecklistLive.Index, :index
     live "/checklists/new", ChecklistLive.Index, :new
